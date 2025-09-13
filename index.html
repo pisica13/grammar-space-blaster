@@ -1,590 +1,430 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grammar Space Blaster</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Press Start 2P', cursive, Arial, sans-serif;
-            background-color: #0f0824;
-            color: #fff;
-            overflow: hidden;
-            background-image: 
-                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 10px),
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 5px),
-                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 10px);
-            background-size: 550px 550px, 350px 350px, 250px 250px;
-            background-position: 0 0, 40px 60px, 130px 270px;
-        }
-        
-        #game-container {
-            position: relative;
-            width: 800px;
-            height: 600px;
-            margin: 20px auto;
-            border: 4px solid #ff00ff;
-            box-shadow: 0 0 10px #ff00ff, inset 0 0 20px #ff00ff;
-            overflow: hidden;
-            background: linear-gradient(to bottom, #000033, #000066);
-        }
-        
-        #player {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 30px;
-            background-color: #00ffff;
-            color: #000;
-            text-align: center;
-            line-height: 30px;
-            font-size: 16px;
-            box-shadow: 0 0 10px #00ffff;
-            border-radius: 5px;
-        }
-        
-        .bullet {
-            position: absolute;
-            width: 10px;
-            height: 20px;
-            background-color: #ff9900;
-            box-shadow: 0 0 8px #ff9900;
-            border-radius: 2px;
-        }
-        
-        .word {
-            position: absolute;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-size: 16px;
-            text-align: center;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-        }
-        
-        .correct {
-            background-color: #00cc00;
-            color: #000;
-            border: 2px solid #00ff00;
-        }
-        
-        .incorrect {
-            background-color: #cc0000;
-            color: #fff;
-            border: 2px solid #ff0000;
-        }
-        
-        .explosion {
-            position: absolute;
-            border-radius: 50%;
-            background-color: #ffaa00;
-            box-shadow: 0 0 20px #ff5500;
-            opacity: 0.8;
-        }
-        
-        #score-container {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 20px;
-            color: #00ffff;
-            text-shadow: 2px 2px 0 #ff00ff;
-        }
-        
-        #controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            text-align: right;
-            font-size: 14px;
-            color: #ff9900;
-        }
-        
-        #start-screen, #game-over {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(0, 0, 50, 0.9);
-            z-index: 100;
-        }
-        
-        #game-over {
-            display: none;
-        }
-        
-        h1 {
-            font-size: 36px;
-            color: #ff00ff;
-            text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        h2 {
-            font-size: 24px;
-            color: #00ffff;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
-            font-family: 'Press Start 2P', cursive;
-            background-color: #ff00ff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 20px 0;
-            box-shadow: 0 0 15px #ff00ff;
-            transition: all 0.3s;
-        }
-        
-        button:hover {
-            background-color: #00ffff;
-            box-shadow: 0 0 20px #00ffff;
-            transform: scale(1.05);
-        }
-        
-        p {
-            font-size: 16px;
-            line-height: 1.6;
-            margin: 10px 40px;
-            text-align: center;
-            color: #ff9900;
-        }
-        
-        #instructions {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 15px;
-            background-color: rgba(0, 0, 40, 0.7);
-            border: 2px solid #00ffff;
-            border-radius: 10px;
-        }
-        
-        .highlight {
-            color: #ff00ff;
-            font-weight: bold;
-        }
-        
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 10px;
-            background: linear-gradient(to bottom, 
-                rgba(255, 0, 255, 0.2), 
-                rgba(0, 255, 255, 0.2), 
-                rgba(255, 0, 255, 0.2));
-            z-index: 10;
-            animation: scan 4s linear infinite;
-        }
-        
-        @keyframes scan {
-            0% { top: 0; }
-            100% { top: 100%; }
-        }
-        
-        .star {
-            position: absolute;
-            background-color: white;
-            border-radius: 50%;
-        }
-        
-        .bilingual {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .russian {
-            color: #ff9900;
-        }
-        
-        .english {
-            color: #00ffff;
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grammar Space Blaster</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Press Start 2P', cursive, Arial, sans-serif;
+      background-color: #0f0824;
+      color: #fff;
+      overflow: hidden;
+      background-image: 
+        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 10px),
+        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 5px),
+        radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 10px);
+      background-size: 550px 550px, 350px 350px, 250px 250px;
+      background-position: 0 0, 40px 60px, 130px 270px;
+    }
+
+    #game-container {
+      position: relative;
+      width: 800px;
+      height: 600px;
+      margin: 20px auto;
+      border: 4px solid #ff00ff;
+      box-shadow: 0 0 10px #ff00ff, inset 0 0 20px #ff00ff;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #000033, #000066);
+    }
+
+    #player {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 30px;
+      background-color: #00ffff;
+      color: #000;
+      text-align: center;
+      line-height: 30px;
+      font-size: 16px;
+      box-shadow: 0 0 10px #00ffff;
+      border-radius: 5px;
+    }
+
+    .bullet {
+      position: absolute;
+      width: 10px;
+      height: 20px;
+      background-color: #ff9900;
+      box-shadow: 0 0 8px #ff9900;
+      border-radius: 2px;
+    }
+
+    .word {
+      position: absolute;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 16px;
+      text-align: center;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+    }
+
+    .correct { background-color: #00cc00; color: #000; border: 2px solid #00ff00; }
+    .incorrect { background-color: #cc0000; color: #fff; border: 2px solid #ff0000; }
+
+    .explosion {
+      position: absolute;
+      border-radius: 50%;
+      background-color: #ffaa00;
+      box-shadow: 0 0 20px #ff5500;
+      opacity: 0.8;
+    }
+
+    #score-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 20px;
+      color: #00ffff;
+      text-shadow: 2px 2px 0 #ff00ff;
+    }
+
+    #controls {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      text-align: right;
+      font-size: 14px;
+      color: #ff9900;
+    }
+
+    #start-screen, #game-over, #countdown {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0,0,50,0.9);
+      z-index: 100;
+    }
+
+    #game-over { display: none; }
+    #countdown { display: none; background: rgba(0,0,0,0.7); }
+
+    h1 {
+      font-size: 36px;
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    h2 { font-size: 24px; color: #00ffff; margin-bottom: 20px; text-align: center; }
+
+    #countdown-number {
+      font-size: 80px;
+      color: #ff00ff;
+      text-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      font-family: 'Press Start 2P', cursive;
+      background-color: #ff00ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 20px 0;
+      box-shadow: 0 0 15px #ff00ff;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background-color: #00ffff;
+      box-shadow: 0 0 20px #00ffff;
+      transform: scale(1.05);
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 10px 40px;
+      text-align: center;
+      color: #ff9900;
+    }
+
+    #instructions {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 15px;
+      background-color: rgba(0, 0, 40, 0.7);
+      border: 2px solid #00ffff;
+      border-radius: 10px;
+    }
+
+    .highlight { color: #ff00ff; font-weight: bold; }
+    .scan-line {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 10px;
+      background: linear-gradient(to bottom, 
+        rgba(255,0,255,0.2), rgba(0,255,255,0.2), rgba(255,0,255,0.2));
+      z-index: 10;
+      animation: scan 4s linear infinite;
+    }
+    @keyframes scan { 0%{top:0;} 100%{top:100%;} }
+
+    .star { position: absolute; background-color: white; border-radius: 50%; }
+
+    .bilingual { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .russian { color: #ff9900; }
+    .english { color: #00ffff; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="game-container">
-        <div id="player">am</div>
-        <div id="score-container">SCORE: <span id="score">0</span></div>
-        <div id="controls">
-            ← → to move<br>
-            SPACE to shoot
+  <div id="game-container">
+    <div id="player">am</div>
+    <div id="score-container">SCORE: <span id="score">0</span></div>
+    <div id="controls">← → to move<br>SPACE to shoot</div>
+    <div class="scan-line"></div>
+
+    <div id="start-screen">
+      <h1>GRAMMAR SPACE BLASTER</h1>
+      <div id="instructions">
+        <div class="bilingual">
+          <p class="russian">Вы летите через космос, встречая английские фразы</p>
+          <p class="english">You are flying through space, encountering English phrases</p>
         </div>
-        <div class="scan-line"></div>
-        
-        <div id="start-screen">
-            <h1>GRAMMAR SPACE BLASTER</h1>
-            <div id="instructions">
-                <div class="bilingual">
-                    <p class="russian">Вы летите через космос, встречая английские фразы</p>
-                    <p class="english">You are flying through space, encountering English phrases</p>
-                </div>
-                <div class="bilingual">
-                    <p class="russian">СТРЕЛЯЙTE в фразы, которые требуют "am"</p>
-                    <p class="english">SHOOT phrases that need "am"</p>
-                </div>
-                <div class="bilingual">
-                    <p class="russian">ИЗБЕГАЙTE фразы, которые НЕ требуют "am"</p>
-                    <p class="english">AVOID phrases that DON'T need "am"</p>
-                </div>
-                <p>Correct hits: <span class="highlight">+10 points</span></p>
-                <p>Wrong hits: <span class="highlight">-20 points</span></p>
-            </div>
-            <button id="start-button">START MISSION</button>
+        <div class="bilingual">
+          <p class="russian">СТРЕЛЯЙTE в фразы, которые требуют "am"</p>
+          <p class="english">SHOOT phrases that need "am"</p>
         </div>
-        
-        <div id="game-over">
-            <h1>MISSION COMPLETE</h1>
-            <h2>Final Score: <span id="final-score">0</span></h2>
-            <p>Your English grammar skills are <span id="compliment">out of this world</span>!</p>
-            <button id="restart-button">TRY AGAIN</button>
+        <div class="bilingual">
+          <p class="russian">ИЗБЕГАЙTE фразы, которые НЕ требуют "am"</p>
+          <p class="english">AVOID phrases that DON'T need "am"</p>
         </div>
+        <p>Correct hits: <span class="highlight">+10 points</span></p>
+        <p>Wrong hits: <span class="highlight">-20 points</span></p>
+      </div>
+      <button id="start-button">START MISSION</button>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const gameContainer = document.getElementById('game-container');
-            const player = document.getElementById('player');
-            const scoreElement = document.getElementById('score');
-            const startScreen = document.getElementById('start-screen');
-            const gameOverScreen = document.getElementById('game-over');
-            const startButton = document.getElementById('start-button');
-            const restartButton = document.getElementById('restart-button');
-            const finalScoreElement = document.getElementById('final-score');
-            const complimentElement = document.getElementById('compliment');
-            
-            let playerX = gameContainer.offsetWidth / 2 - player.offsetWidth / 2;
-            let score = 0;
-            let gameActive = false;
-            let gameSpeed = 1.5; // Slower speed as requested
-            let wordInterval;
-            let stars = [];
-            
-            // Grammar examples - correct ones need "am", incorrect ones don't
-            const correctGrammar = [
-                "I __ happy",
-                "I __ working now",
-                "I __ at home",
-                "I __ studying English",
-                "I __ a doctor",
-                "I __ learning quickly",
-                "I __ very talented",
-                "I __ going to the cinema",
-                "I __ tired",
-                "I __ hungry",
-                "I __ thinking",
-                "I __ applying",
-                "I __ watching TV",
-                "I __ loving this game",
-                "I __ making breakfast",
-                "I __ taking shower",
-                "I __ taking a photo",
-                "I __ working with photos",
-                "I __ watching movie"
-            ];
-            
-            const incorrectGrammar = [
-                "I ___ make breakfast",
-                "I ___ take shower",
-                "I ___ take a photo",
-                "I ___ applied",
-                "I ___ ate dinner",
-                "I ___ went to bed",
-                "I ___ thought",
-                "I ___ worked",
-                "I ___ watched",
-                "I ___ work every day",
-                "I ___ speak Russian",
-                "I ___ play football",
-                "I ___ eat breakfast",
-                "I ___ drive a car",
-                "I ___ learn English",
-                "I ___ sing beautifully",
-                "I ___ go to school"
-            ];
-            
-            // Create background stars
-            function createStars() {
-                for (let i = 0; i < 100; i++) {
-                    const star = document.createElement('div');
-                    star.classList.add('star');
-                    
-                    const size = Math.random() * 3;
-                    star.style.width = size + 'px';
-                    star.style.height = size + 'px';
-                    
-                    star.style.left = Math.random() * gameContainer.offsetWidth + 'px';
-                    star.style.top = Math.random() * gameContainer.offsetHeight + 'px';
-                    
-                    gameContainer.appendChild(star);
-                    stars.push(star);
-                }
+    <div id="countdown">
+      <div id="countdown-number">3</div>
+    </div>
+
+    <div id="game-over">
+      <h1>MISSION COMPLETE</h1>
+      <h2>Final Score: <span id="final-score">0</span></h2>
+      <p>Your English grammar skills are <span id="compliment">out of this world</span>!</p>
+      <button id="restart-button">TRY AGAIN</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const gameContainer = document.getElementById('game-container');
+      const player = document.getElementById('player');
+      const scoreElement = document.getElementById('score');
+      const startScreen = document.getElementById('start-screen');
+      const gameOverScreen = document.getElementById('game-over');
+      const startButton = document.getElementById('start-button');
+      const restartButton = document.getElementById('restart-button');
+      const finalScoreElement = document.getElementById('final-score');
+      const complimentElement = document.getElementById('compliment');
+      const countdownScreen = document.getElementById('countdown');
+      const countdownNumber = document.getElementById('countdown-number');
+
+      let playerX = gameContainer.offsetWidth / 2 - player.offsetWidth / 2;
+      let score = 0;
+      let gameActive = false;
+      let gameSpeed = 1.5;
+      let wordInterval;
+      let stars = [];
+
+      const correctGrammar = [
+        "I __ happy","I __ working now","I __ at home","I __ studying English",
+        "I __ a doctor","I __ learning quickly","I __ very talented",
+        "I __ going to the cinema","I __ tired","I __ hungry","I __ thinking",
+        "I __ applying","I __ watching TV","I __ loving this game",
+        "I __ making breakfast","I __ taking shower","I __ taking a photo",
+        "I __ working with photos","I __ watching movie"
+      ];
+      const incorrectGrammar = [
+        "I ___ make breakfast","I ___ take shower","I ___ take a photo","I ___ applied",
+        "I ___ ate dinner","I ___ went to bed","I ___ thought","I ___ worked",
+        "I ___ watched","I ___ work every day","I ___ speak Russian","I ___ play football",
+        "I ___ eat breakfast","I ___ drive a car","I ___ learn English",
+        "I ___ sing beautifully","I ___ go to school"
+      ];
+
+      function createStars() {
+        for (let i = 0; i < 100; i++) {
+          const star = document.createElement('div');
+          star.classList.add('star');
+          const size = Math.random() * 3;
+          star.style.width = size + 'px';
+          star.style.height = size + 'px';
+          star.style.left = Math.random() * gameContainer.offsetWidth + 'px';
+          star.style.top = Math.random() * gameContainer.offsetHeight + 'px';
+          gameContainer.appendChild(star);
+          stars.push(star);
+        }
+      }
+      function moveStars() {
+        stars.forEach(star => {
+          let y = parseInt(star.style.top || 0);
+          y += gameSpeed / 2;
+          if (y > gameContainer.offsetHeight) {
+            y = 0;
+            star.style.left = Math.random() * gameContainer.offsetWidth + 'px';
+          }
+          star.style.top = y + 'px';
+        });
+      }
+
+      function showCountdown(startCallback) {
+        startScreen.style.display = "none";
+        countdownScreen.style.display = "flex";
+        let count = 3;
+        countdownNumber.textContent = count;
+        const interval = setInterval(() => {
+          count--;
+          if (count > 0) {
+            countdownNumber.textContent = count;
+          } else if (count === 0) {
+            countdownNumber.textContent = "GO!";
+          } else {
+            clearInterval(interval);
+            countdownScreen.style.display = "none";
+            startCallback();
+          }
+        }, 1000);
+      }
+
+      function initGame() {
+        score = 0;
+        scoreElement.textContent = score;
+        gameSpeed = 1.5;
+        gameActive = true;
+        playerX = gameContainer.offsetWidth / 2 - player.offsetWidth / 2;
+        player.style.left = playerX + "px";
+        document.querySelectorAll('.word').forEach(word => word.remove());
+        document.querySelectorAll('.bullet').forEach(bullet => bullet.remove());
+        clearInterval(wordInterval);
+        wordInterval = setInterval(createWord, 1800);
+        setInterval(moveStars, 50);
+      }
+
+      function createWord() {
+        const word = document.createElement('div');
+        word.classList.add('word');
+        const isCorrect = Math.random() > 0.5;
+        const wordList = isCorrect ? correctGrammar : incorrectGrammar;
+        word.textContent = wordList[Math.floor(Math.random() * wordList.length)];
+        word.classList.add(isCorrect ? 'correct' : 'incorrect');
+        word.style.left = Math.random() * (gameContainer.offsetWidth - 150) + 'px';
+        word.style.top = '-50px';
+        gameContainer.appendChild(word);
+        let y = -50;
+        const fallInterval = setInterval(() => {
+          if (!gameActive) { clearInterval(fallInterval); word.remove(); return; }
+          y += gameSpeed; word.style.top = y + 'px';
+          if (y > gameContainer.offsetHeight) { clearInterval(fallInterval); word.remove(); }
+        }, 20);
+      }
+
+      function createExplosion(x, y) {
+        const explosion = document.createElement('div');
+        explosion.classList.add('explosion');
+        explosion.style.left = (x - 25) + 'px';
+        explosion.style.top = (y - 25) + 'px';
+        explosion.style.width = '50px';
+        explosion.style.height = '50px';
+        gameContainer.appendChild(explosion);
+        let size = 50, opacity = 0.8;
+        const explodeInterval = setInterval(() => {
+          size += 5; opacity -= 0.1;
+          explosion.style.width = size + 'px';
+          explosion.style.height = size + 'px';
+          explosion.style.left = (x - size/2) + 'px';
+          explosion.style.top = (y - size/2) + 'px';
+          explosion.style.opacity = opacity;
+          if (opacity <= 0) { clearInterval(explodeInterval); explosion.remove(); }
+        }, 50);
+      }
+
+      function fireBullet() {
+        if (!gameActive) return;
+        const bullet = document.createElement('div');
+        bullet.classList.add('bullet');
+        bullet.style.left = (playerX + player.offsetWidth/2 - 5) + 'px';
+        bullet.style.top = (gameContainer.offsetHeight - 70) + 'px';
+        gameContainer.appendChild(bullet);
+        let y = parseInt(bullet.style.top);
+        const bulletInterval = setInterval(() => {
+          if (!gameActive) { clearInterval(bulletInterval); bullet.remove(); return; }
+          y -= 10; bullet.style.top = y + 'px';
+          const words = document.querySelectorAll('.word');
+          let hit = false;
+          words.forEach(word => {
+            const wordRect = word.getBoundingClientRect();
+            const bulletRect = bullet.getBoundingClientRect();
+            if (!(bulletRect.right < wordRect.left || bulletRect.left > wordRect.right || 
+                  bulletRect.bottom < wordRect.top || bulletRect.top > wordRect.bottom)) {
+              clearInterval(bulletInterval); hit = true;
+              createExplosion(parseInt(bullet.style.left)+5, parseInt(bullet.style.top)+10);
+              if (word.classList.contains('correct')) score += 10;
+              else { score -= 20; if (score < 0) score = 0; }
+              scoreElement.textContent = score;
+              bullet.remove(); word.remove();
             }
-            
-            // Move stars for parallax effect
-            function moveStars() {
-                stars.forEach(star => {
-                    let y = parseInt(star.style.top || 0);
-                    y += gameSpeed / 2;
-                    
-                    if (y > gameContainer.offsetHeight) {
-                        y = 0;
-                        star.style.left = Math.random() * gameContainer.offsetWidth + 'px';
-                    }
-                    
-                    star.style.top = y + 'px';
-                });
-            }
-            
-            // Initialize game
-            function initGame() {
-                score = 0;
-                scoreElement.textContent = score;
-                gameSpeed = 1.5;
-                
-                // Clear any existing words
-                document.querySelectorAll('.word').forEach(word => word.remove());
-                document.querySelectorAll('.bullet').forEach(bullet => bullet.remove());
-                
-                // Hide the start screen
-                startScreen.style.display = "none";
-                
-                // Start generating words
-                clearInterval(wordInterval);
-                wordInterval = setInterval(createWord, 1800); // Slower word generation
-                
-                // Animate stars
-                setInterval(moveStars, 50);
-            }
-            
-            // Create a falling word
-            function createWord() {
-                const word = document.createElement('div');
-                word.classList.add('word');
-                
-                // Randomly decide if it's correct or incorrect grammar
-                const isCorrect = Math.random() > 0.5;
-                const wordList = isCorrect ? correctGrammar : incorrectGrammar;
-                const text = wordList[Math.floor(Math.random() * wordList.length)];
-                
-                word.textContent = text;
-                
-                if (isCorrect) {
-                    word.classList.add('correct');
-                } else {
-                    word.classList.add('incorrect');
-                }
-                
-                // Position at random horizontal position at the top
-                const x = Math.random() * (gameContainer.offsetWidth - 150);
-                word.style.left = x + 'px';
-                word.style.top = '-50px';
-                
-                // Add to game container
-                gameContainer.appendChild(word);
-                
-                // Animate word falling
-                let y = -50;
-                const fallInterval = setInterval(() => {
-                    if (!gameActive) {
-                        clearInterval(fallInterval);
-                        word.remove();
-                        return;
-                    }
-                    
-                    y += gameSpeed;
-                    word.style.top = y + 'px';
-                    
-                    // Remove word if it goes off screen
-                    if (y > gameContainer.offsetHeight) {
-                        clearInterval(fallInterval);
-                        word.remove();
-                    }
-                }, 20);
-            }
-            
-            // Create explosion effect
-            function createExplosion(x, y) {
-                const explosion = document.createElement('div');
-                explosion.classList.add('explosion');
-                explosion.style.left = (x - 25) + 'px';
-                explosion.style.top = (y - 25) + 'px';
-                explosion.style.width = '50px';
-                explosion.style.height = '50px';
-                
-                gameContainer.appendChild(explosion);
-                
-                // Animate explosion
-                let size = 50;
-                let opacity = 0.8;
-                const explodeInterval = setInterval(() => {
-                    size += 5;
-                    opacity -= 0.1;
-                    
-                    explosion.style.width = size + 'px';
-                    explosion.style.height = size + 'px';
-                    explosion.style.left = (x - size/2) + 'px';
-                    explosion.style.top = (y - size/2) + 'px';
-                    explosion.style.opacity = opacity;
-                    
-                    if (opacity <= 0) {
-                        clearInterval(explodeInterval);
-                        explosion.remove();
-                    }
-                }, 50);
-            }
-            
-            // Fire a bullet
-            function fireBullet() {
-                if (!gameActive) return;
-                
-                const bullet = document.createElement('div');
-                bullet.classList.add('bullet');
-                bullet.style.left = (playerX + player.offsetWidth/2 - 5) + 'px';
-                bullet.style.top = (gameContainer.offsetHeight - 70) + 'px';
-                
-                gameContainer.appendChild(bullet);
-                
-                // Animate bullet movement
-                let y = parseInt(bullet.style.top);
-                const bulletInterval = setInterval(() => {
-                    if (!gameActive) {
-                        clearInterval(bulletInterval);
-                        bullet.remove();
-                        return;
-                    }
-                    
-                    y -= 10;
-                    bullet.style.top = y + 'px';
-                    
-                    // Check for collision with words
-                    const words = document.querySelectorAll('.word');
-                    let hit = false;
-                    
-                    words.forEach(word => {
-                        const wordRect = word.getBoundingClientRect();
-                        const bulletRect = bullet.getBoundingClientRect();
-                        
-                        if (!(bulletRect.right < wordRect.left || 
-                              bulletRect.left > wordRect.right || 
-                              bulletRect.bottom < wordRect.top || 
-                              bulletRect.top > wordRect.bottom)) {
-                            // Collision detected
-                            clearInterval(bulletInterval);
-                            hit = true;
-                            
-                            // Create explosion
-                            createExplosion(
-                                parseInt(bullet.style.left) + 5,
-                                parseInt(bullet.style.top) + 10
-                            );
-                            
-                            // Check if correct or incorrect grammar was hit
-                            const isCorrect = word.classList.contains('correct');
-                            
-                            if (isCorrect) {
-                                // Correct hit - add points
-                                score += 10;
-                                scoreElement.textContent = score;
-                            } else {
-                                // Incorrect hit - subtract points
-                                score -= 20;
-                                if (score < 0) score = 0;
-                                scoreElement.textContent = score;
-                            }
-                            
-                            // Remove bullet and word
-                            bullet.remove();
-                            word.remove();
-                        }
-                    });
-                    
-                    // Remove bullet if it goes off screen
-                    if (y < 0 || hit) {
-                        clearInterval(bulletInterval);
-                        bullet.remove();
-                    }
-                }, 20);
-            }
-            
-            // Game over
-            function endGame() {
-                gameActive = false;
-                clearInterval(wordInterval);
-                
-                // Show final score
-                finalScoreElement.textContent = score;
-                
-                // Give a compliment based on score
-                let compliment = "improving!";
-                if (score >= 300) compliment = "absolutely stellar!";
-                else if (score >= 200) compliment = "troutstanding!";
-                else if (score >= 150) compliment = "really great!";
-                else if (score >= 100) compliment = "getting better!";
-                
-                complimentElement.textContent = compliment;
-                
-                // Show game over screen
-                gameOverScreen.style.display = "flex";
-            }
-            
-            // Event listeners
-            document.addEventListener('keydown', function(e) {
-                if (!gameActive && e.key === ' ') {
-                    // Start the game when space is pressed
-                    startButton.click();
-                    return;
-                }
-                
-                if (!gameActive) return;
-                
-                // Move player
-                if (e.key === 'ArrowLeft') {
-                    playerX -= 20;
-                    if (playerX < 0) playerX = 0;
-                    player.style.left = playerX + 'px';
-                } else if (e.key === 'ArrowRight') {
-                    playerX += 20;
-                    if (playerX > gameContainer.offsetWidth - player.offsetWidth) {
-                        playerX = gameContainer.offsetWidth - player.offsetWidth;
-                    }
-                    player.style.left = playerX + 'px';
-                } else if (e.key === ' ') {
-                    // Space bar to shoot
-                    fireBullet();
-                    e.preventDefault(); // Prevent scrolling
-                }
-            });
-            
-            startButton.addEventListener('click', function() {
-                gameActive = true;
-                initGame();
-                
-                // Set timer to end game after 60 seconds
-                setTimeout(endGame, 60000);
-            });
-            
-            restartButton.addEventListener('click', function() {
-                gameOverScreen.style.display = "none";
-                gameActive = true;
-                initGame();
-                
-                // Set timer to end game after 60 seconds
+          });
+          if (y < 0 || hit) { clearInterval(bulletInterval); bullet.remove(); }
+        }, 20);
+      }
+
+      function endGame() {
+        gameActive = false;
+        clearInterval(wordInterval);
+        finalScoreElement.textContent = score;
+        let compliment = "improving!";
+        if (score >= 300) compliment = "absolutely stellar!";
+        else if (score >= 200) compliment = "outstanding!";
+        else if (score >= 150) compliment = "really great!";
+        else if (score >= 100) compliment = "getting better!";
+        complimentElement.textContent = compliment;
+        gameOverScreen.style.display = "flex";
+      }
+
+      document.addEventListener('keydown', function(e) {
+        if (!gameActive && e.key === ' ') {
+          showCountdown(() => { initGame(); setTimeout(endGame, 60000); });
+          return;
+        }
+        if (!gameActive) return;
+        if (e.key === 'ArrowLeft') {
+          playerX -= 20; if (playerX < 0) playerX = 0;
+          player.style.left = playerX + 'px';
+        } else if (e.key === 'ArrowRight') {
+          playerX += 20; if (playerX > gameContainer.offsetWidth - player.offsetWidth) {
+            playerX = gameContainer.offsetWidth - player.offsetWidth;
+          }
+          player.style.left = playerX + 'px';
+        } else if (e.key === ' ') { fireBullet(); e.preventDefault(); }
+      });
+
+      startButton.addEventListener('click', function() {
+        showCountdown(() => { initGame(); setTimeout(endGame, 60000); });
+      });
+      restartButton.addEventListener('click', function() {
+        gameOverScreen.style.display = "none";
+        showCountdown(() => { initGame(); setTimeout(endGame, 60000); });
+      });
+
+      createStars();
+    });
+  </script>
+</body>
+</html>
