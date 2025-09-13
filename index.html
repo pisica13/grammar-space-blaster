@@ -12,7 +12,7 @@
       background-color: #0f0824;
       color: #fff;
       overflow: hidden;
-      background-image: 
+      background-image:
         radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 10px),
         radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 5px),
         radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 10px);
@@ -36,15 +36,10 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      width: 60px;
-      height: 30px;
-      background-color: #00ffff;
-      color: #000;
-      text-align: center;
-      line-height: 30px;
-      font-size: 16px;
-      box-shadow: 0 0 10px #00ffff;
-      border-radius: 5px;
+      font-size: 32px;
+      font-weight: bold;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
     }
 
     .bullet {
@@ -62,11 +57,11 @@
       border-radius: 5px;
       font-size: 16px;
       text-align: center;
-      box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
     }
-
-    .correct { background-color: #00cc00; color: #000; border: 2px solid #00ff00; }
-    .incorrect { background-color: #cc0000; color: #fff; border: 2px solid #ff0000; }
 
     .explosion {
       position: absolute;
@@ -94,20 +89,21 @@
       color: #ff9900;
     }
 
-    #start-screen, #game-over, #countdown {
+    #start-screen, #game-over {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background-color: rgba(0,0,50,0.9);
+      background-color: rgba(0, 0, 50, 0.9);
       z-index: 100;
     }
 
     #game-over { display: none; }
-    #countdown { display: none; background: rgba(0,0,0,0.7); }
 
     h1 {
       font-size: 36px;
@@ -117,12 +113,11 @@
       text-align: center;
     }
 
-    h2 { font-size: 24px; color: #00ffff; margin-bottom: 20px; text-align: center; }
-
-    #countdown-number {
-      font-size: 80px;
-      color: #ff00ff;
-      text-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;
+    h2 {
+      font-size: 24px;
+      color: #00ffff;
+      margin-bottom: 20px;
+      text-align: center;
     }
 
     button {
@@ -163,20 +158,39 @@
     }
 
     .highlight { color: #ff00ff; font-weight: bold; }
+
     .scan-line {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 10px;
-      background: linear-gradient(to bottom, 
-        rgba(255,0,255,0.2), rgba(0,255,255,0.2), rgba(255,0,255,0.2));
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      background: linear-gradient(to bottom,
+        rgba(255, 0, 255, 0.2),
+        rgba(0, 255, 255, 0.2),
+        rgba(255, 0, 255, 0.2));
       z-index: 10;
       animation: scan 4s linear infinite;
     }
-    @keyframes scan { 0%{top:0;} 100%{top:100%;} }
 
-    .star { position: absolute; background-color: white; border-radius: 50%; }
+    @keyframes scan {
+      0% { top: 0; }
+      100% { top: 100%; }
+    }
 
-    .bilingual { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .star {
+      position: absolute;
+      background-color: white;
+      border-radius: 50%;
+    }
+
+    .bilingual {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
     .russian { color: #ff9900; }
     .english { color: #00ffff; }
   </style>
@@ -186,7 +200,10 @@
   <div id="game-container">
     <div id="player">am</div>
     <div id="score-container">SCORE: <span id="score">0</span></div>
-    <div id="controls">← → to move<br>SPACE to shoot</div>
+    <div id="controls">
+      ← → to move<br>
+      SPACE to shoot
+    </div>
     <div class="scan-line"></div>
 
     <div id="start-screen">
@@ -210,10 +227,6 @@
       <button id="start-button">START MISSION</button>
     </div>
 
-    <div id="countdown">
-      <div id="countdown-number">3</div>
-    </div>
-
     <div id="game-over">
       <h1>MISSION COMPLETE</h1>
       <h2>Final Score: <span id="final-score">0</span></h2>
@@ -233,8 +246,6 @@
       const restartButton = document.getElementById('restart-button');
       const finalScoreElement = document.getElementById('final-score');
       const complimentElement = document.getElementById('compliment');
-      const countdownScreen = document.getElementById('countdown');
-      const countdownNumber = document.getElementById('countdown-number');
 
       let playerX = gameContainer.offsetWidth / 2 - player.offsetWidth / 2;
       let score = 0;
@@ -244,19 +255,20 @@
       let stars = [];
 
       const correctGrammar = [
-        "I __ happy","I __ working now","I __ at home","I __ studying English",
-        "I __ a doctor","I __ learning quickly","I __ very talented",
-        "I __ going to the cinema","I __ tired","I __ hungry","I __ thinking",
-        "I __ applying","I __ watching TV","I __ loving this game",
-        "I __ making breakfast","I __ taking shower","I __ taking a photo",
-        "I __ working with photos","I __ watching movie"
+        "I __ happy", "I __ working now", "I __ at home", "I __ studying English",
+        "I __ a photographer", "I __ learning quickly", "I __ very talented",
+        "I __ going to the cinema", "I __ tired", "I __ hungry",
+        "I __ thinking", "I __ applying to different jobs", "I __ watching TV",
+        "I __ loving this game", "I __ making breakfast", "I __ taking a shower",
+        "I __ taking a photo", "I __ working with photos", "I __ watching a movie"
       ];
+
       const incorrectGrammar = [
-        "I ___ make breakfast","I ___ take shower","I ___ take a photo","I ___ applied",
-        "I ___ ate dinner","I ___ went to bed","I ___ thought","I ___ worked",
-        "I ___ watched","I ___ work every day","I ___ speak Russian","I ___ play football",
-        "I ___ eat breakfast","I ___ drive a car","I ___ learn English",
-        "I ___ sing beautifully","I ___ go to school"
+        "I ___ make breakfast","I ___ take a shower","I ___ take a photo","I ___ applied to different jobs",
+        "I ___ ate dinner","I ___ went to bed","I ___ thought about it","I ___ worked yesterday",
+        "I ___ watched a movie","I ___ work every day","I ___ speak Russian","I ___ play football",
+        "I ___ eat breakfast","I ___ drive a car","I ___ learn English","I ___ sing beautifully",
+        "I ___ go to school"
       ];
 
       function createStars() {
@@ -272,6 +284,7 @@
           stars.push(star);
         }
       }
+
       function moveStars() {
         stars.forEach(star => {
           let y = parseInt(star.style.top || 0);
@@ -284,54 +297,57 @@
         });
       }
 
-      function showCountdown(startCallback) {
-        startScreen.style.display = "none";
-        countdownScreen.style.display = "flex";
-        let count = 3;
-        countdownNumber.textContent = count;
-        const interval = setInterval(() => {
-          count--;
-          if (count > 0) {
-            countdownNumber.textContent = count;
-          } else if (count === 0) {
-            countdownNumber.textContent = "GO!";
-          } else {
-            clearInterval(interval);
-            countdownScreen.style.display = "none";
-            startCallback();
-          }
-        }, 1000);
-      }
-
       function initGame() {
         score = 0;
         scoreElement.textContent = score;
         gameSpeed = 1.5;
         gameActive = true;
+
         playerX = gameContainer.offsetWidth / 2 - player.offsetWidth / 2;
         player.style.left = playerX + "px";
+
         document.querySelectorAll('.word').forEach(word => word.remove());
         document.querySelectorAll('.bullet').forEach(bullet => bullet.remove());
+
+        startScreen.style.display = "none";
+
         clearInterval(wordInterval);
         wordInterval = setInterval(createWord, 1800);
+
         setInterval(moveStars, 50);
       }
 
       function createWord() {
         const word = document.createElement('div');
         word.classList.add('word');
+
         const isCorrect = Math.random() > 0.5;
         const wordList = isCorrect ? correctGrammar : incorrectGrammar;
-        word.textContent = wordList[Math.floor(Math.random() * wordList.length)];
-        word.classList.add(isCorrect ? 'correct' : 'incorrect');
-        word.style.left = Math.random() * (gameContainer.offsetWidth - 150) + 'px';
+        const text = wordList[Math.floor(Math.random() * wordList.length)];
+
+        word.textContent = text;
+        if (isCorrect) word.classList.add('correct');
+        else word.classList.add('incorrect');
+
+        const x = Math.random() * (gameContainer.offsetWidth - 150);
+        word.style.left = x + 'px';
         word.style.top = '-50px';
+
         gameContainer.appendChild(word);
+
         let y = -50;
         const fallInterval = setInterval(() => {
-          if (!gameActive) { clearInterval(fallInterval); word.remove(); return; }
-          y += gameSpeed; word.style.top = y + 'px';
-          if (y > gameContainer.offsetHeight) { clearInterval(fallInterval); word.remove(); }
+          if (!gameActive) {
+            clearInterval(fallInterval);
+            word.remove();
+            return;
+          }
+          y += gameSpeed;
+          word.style.top = y + 'px';
+          if (y > gameContainer.offsetHeight) {
+            clearInterval(fallInterval);
+            word.remove();
+          }
         }, 20);
       }
 
@@ -343,15 +359,21 @@
         explosion.style.width = '50px';
         explosion.style.height = '50px';
         gameContainer.appendChild(explosion);
-        let size = 50, opacity = 0.8;
+
+        let size = 50;
+        let opacity = 0.8;
         const explodeInterval = setInterval(() => {
-          size += 5; opacity -= 0.1;
+          size += 5;
+          opacity -= 0.1;
           explosion.style.width = size + 'px';
           explosion.style.height = size + 'px';
           explosion.style.left = (x - size/2) + 'px';
           explosion.style.top = (y - size/2) + 'px';
           explosion.style.opacity = opacity;
-          if (opacity <= 0) { clearInterval(explodeInterval); explosion.remove(); }
+          if (opacity <= 0) {
+            clearInterval(explodeInterval);
+            explosion.remove();
+          }
         }, 50);
       }
 
@@ -362,26 +384,48 @@
         bullet.style.left = (playerX + player.offsetWidth/2 - 5) + 'px';
         bullet.style.top = (gameContainer.offsetHeight - 70) + 'px';
         gameContainer.appendChild(bullet);
+
         let y = parseInt(bullet.style.top);
         const bulletInterval = setInterval(() => {
-          if (!gameActive) { clearInterval(bulletInterval); bullet.remove(); return; }
-          y -= 10; bullet.style.top = y + 'px';
+          if (!gameActive) {
+            clearInterval(bulletInterval);
+            bullet.remove();
+            return;
+          }
+          y -= 10;
+          bullet.style.top = y + 'px';
           const words = document.querySelectorAll('.word');
           let hit = false;
           words.forEach(word => {
             const wordRect = word.getBoundingClientRect();
             const bulletRect = bullet.getBoundingClientRect();
-            if (!(bulletRect.right < wordRect.left || bulletRect.left > wordRect.right || 
-                  bulletRect.bottom < wordRect.top || bulletRect.top > wordRect.bottom)) {
-              clearInterval(bulletInterval); hit = true;
-              createExplosion(parseInt(bullet.style.left)+5, parseInt(bullet.style.top)+10);
-              if (word.classList.contains('correct')) score += 10;
-              else { score -= 20; if (score < 0) score = 0; }
-              scoreElement.textContent = score;
-              bullet.remove(); word.remove();
+            if (!(bulletRect.right < wordRect.left ||
+                  bulletRect.left > wordRect.right ||
+                  bulletRect.bottom < wordRect.top ||
+                  bulletRect.top > wordRect.bottom)) {
+              clearInterval(bulletInterval);
+              hit = true;
+              createExplosion(
+                parseInt(bullet.style.left) + 5,
+                parseInt(bullet.style.top) + 10
+              );
+              const isCorrect = word.classList.contains('correct');
+              if (isCorrect) {
+                score += 10;
+                scoreElement.textContent = score;
+              } else {
+                score -= 20;
+                if (score < 0) score = 0;
+                scoreElement.textContent = score;
+              }
+              bullet.remove();
+              word.remove();
             }
           });
-          if (y < 0 || hit) { clearInterval(bulletInterval); bullet.remove(); }
+          if (y < 0 || hit) {
+            clearInterval(bulletInterval);
+            bullet.remove();
+          }
         }, 20);
       }
 
@@ -400,27 +444,36 @@
 
       document.addEventListener('keydown', function(e) {
         if (!gameActive && e.key === ' ') {
-          showCountdown(() => { initGame(); setTimeout(endGame, 60000); });
+          initGame();
+          setTimeout(endGame, 60000);
           return;
         }
         if (!gameActive) return;
         if (e.key === 'ArrowLeft') {
-          playerX -= 20; if (playerX < 0) playerX = 0;
+          playerX -= 20;
+          if (playerX < 0) playerX = 0;
           player.style.left = playerX + 'px';
         } else if (e.key === 'ArrowRight') {
-          playerX += 20; if (playerX > gameContainer.offsetWidth - player.offsetWidth) {
+          playerX += 20;
+          if (playerX > gameContainer.offsetWidth - player.offsetWidth) {
             playerX = gameContainer.offsetWidth - player.offsetWidth;
           }
           player.style.left = playerX + 'px';
-        } else if (e.key === ' ') { fireBullet(); e.preventDefault(); }
+        } else if (e.key === ' ') {
+          fireBullet();
+          e.preventDefault();
+        }
       });
 
       startButton.addEventListener('click', function() {
-        showCountdown(() => { initGame(); setTimeout(endGame, 60000); });
+        initGame();
+        setTimeout(endGame, 60000);
       });
+
       restartButton.addEventListener('click', function() {
         gameOverScreen.style.display = "none";
-        showCountdown(() => { initGame(); setTimeout(endGame, 60000); });
+        initGame();
+        setTimeout(endGame, 60000);
       });
 
       createStars();
