@@ -293,10 +293,24 @@
                 "I __ thinking",
                 "I __ applying",
                 "I __ watching TV",
-                "I __ loving this game"
+                "I __ loving this game",
+                "I __ making breakfast",
+                "I __ taking shower",
+                "I __ taking a photo",
+                "I __ working with photos",
+                "I __ watching movie"
             ];
             
             const incorrectGrammar = [
+                "I ___ make breakfast",
+                "I ___ take shower",
+                "I ___ take a photo",
+                "I ___ applied",
+                "I ___ ate dinner",
+                "I ___ went to bed",
+                "I ___ thought",
+                "I ___ worked",
+                "I ___ watched",
                 "I ___ work every day",
                 "I ___ speak Russian",
                 "I ___ play football",
@@ -304,16 +318,7 @@
                 "I ___ drive a car",
                 "I ___ learn English",
                 "I ___ sing beautifully",
-                "I ___ go to school",
-                "I ___ make breakfast",
-                "I ___ take shower",
-                "I ___ take a photo",
-                "I ___ applied already",
-                "I ___ ate dinner",
-                "I ___ went to bed",
-                "I ___ worked yesterday",
-                "I ___ watched movie",
-                "I ___ thought about it"
+                "I ___ go to school"
             ];
             
             // Create background stars
@@ -358,6 +363,9 @@
                 // Clear any existing words
                 document.querySelectorAll('.word').forEach(word => word.remove());
                 document.querySelectorAll('.bullet').forEach(bullet => bullet.remove());
+                
+                // Hide the start screen
+                startScreen.style.display = "none";
                 
                 // Start generating words
                 clearInterval(wordInterval);
@@ -540,6 +548,12 @@
             
             // Event listeners
             document.addEventListener('keydown', function(e) {
+                if (!gameActive && e.key === ' ') {
+                    // Start the game when space is pressed
+                    startButton.click();
+                    return;
+                }
+                
                 if (!gameActive) return;
                 
                 // Move player
@@ -549,4 +563,28 @@
                     player.style.left = playerX + 'px';
                 } else if (e.key === 'ArrowRight') {
                     playerX += 20;
-                    if (playerX
+                    if (playerX > gameContainer.offsetWidth - player.offsetWidth) {
+                        playerX = gameContainer.offsetWidth - player.offsetWidth;
+                    }
+                    player.style.left = playerX + 'px';
+                } else if (e.key === ' ') {
+                    // Space bar to shoot
+                    fireBullet();
+                    e.preventDefault(); // Prevent scrolling
+                }
+            });
+            
+            startButton.addEventListener('click', function() {
+                gameActive = true;
+                initGame();
+                
+                // Set timer to end game after 60 seconds
+                setTimeout(endGame, 60000);
+            });
+            
+            restartButton.addEventListener('click', function() {
+                gameOverScreen.style.display = "none";
+                gameActive = true;
+                initGame();
+                
+                // Set timer to end game after 60 seconds
