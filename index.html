@@ -36,11 +36,15 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 30px;
             background-color: #00ffff;
-            clip-path: polygon(50% 0%, 100% 100%, 50% 70%, 0% 100%);
+            color: #000;
+            text-align: center;
+            line-height: 30px;
+            font-size: 16px;
             box-shadow: 0 0 10px #00ffff;
+            border-radius: 5px;
         }
         
         .bullet {
@@ -198,12 +202,27 @@
             background-color: white;
             border-radius: 50%;
         }
+        
+        .bilingual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .russian {
+            color: #ff9900;
+        }
+        
+        .english {
+            color: #00ffff;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="game-container">
-        <div id="player"></div>
+        <div id="player">am</div>
         <div id="score-container">SCORE: <span id="score">0</span></div>
         <div id="controls">
             ← → to move<br>
@@ -213,11 +232,19 @@
         
         <div id="start-screen">
             <h1>GRAMMAR SPACE BLASTER</h1>
-            <h2>Defend English from grammatical errors!</h2>
             <div id="instructions">
-                <p>Your Russian husband is flying through space, encountering English phrases.</p>
-                <p>SHOOT <span class="highlight">"am"</span> at phrases that need the verb "to be"</p>
-                <p>AVOID shooting phrases that don't need "to be"</p>
+                <div class="bilingual">
+                    <p class="russian">Вы летите через космос, встречая английские фразы</p>
+                    <p class="english">You are flying through space, encountering English phrases</p>
+                </div>
+                <div class="bilingual">
+                    <p class="russian">СТРЕЛЯЙTE в фразы, которые требуют "am"</p>
+                    <p class="english">SHOOT phrases that need "am"</p>
+                </div>
+                <div class="bilingual">
+                    <p class="russian">ИЗБЕГАЙTE фразы, которые НЕ требуют "am"</p>
+                    <p class="english">AVOID phrases that DON'T need "am"</p>
+                </div>
                 <p>Correct hits: <span class="highlight">+10 points</span></p>
                 <p>Wrong hits: <span class="highlight">-20 points</span></p>
             </div>
@@ -247,35 +274,46 @@
             let playerX = gameContainer.offsetWidth / 2 - player.offsetWidth / 2;
             let score = 0;
             let gameActive = false;
-            let gameSpeed = 2;
+            let gameSpeed = 1.5; // Slower speed as requested
             let wordInterval;
             let stars = [];
             
-            // Grammar examples - correct ones need "to be", incorrect ones don't
+            // Grammar examples - correct ones need "am", incorrect ones don't
             const correctGrammar = [
                 "I __ happy",
-                "She __ working now",
-                "They __ at home",
-                "We __ studying English",
-                "He __ a doctor",
-                "It __ raining",
-                "You __ my friend",
+                "I __ working now",
+                "I __ at home",
+                "I __ studying English",
+                "I __ a doctor",
                 "I __ learning quickly",
-                "She __ very talented",
-                "We __ going to the cinema"
+                "I __ very talented",
+                "I __ going to the cinema",
+                "I __ tired",
+                "I __ hungry",
+                "I __ thinking",
+                "I __ applying",
+                "I __ watching TV",
+                "I __ loving this game"
             ];
             
             const incorrectGrammar = [
-                "I work every day",
-                "She speaks Russian",
-                "They play football",
-                "We eat breakfast",
-                "He drives a car",
-                "It happens sometimes",
-                "You understand me",
-                "I learn English",
-                "She sings beautifully",
-                "We go to school"
+                "I ___ work every day",
+                "I ___ speak Russian",
+                "I ___ play football",
+                "I ___ eat breakfast",
+                "I ___ drive a car",
+                "I ___ learn English",
+                "I ___ sing beautifully",
+                "I ___ go to school",
+                "I ___ make breakfast",
+                "I ___ take shower",
+                "I ___ take a photo",
+                "I ___ applied already",
+                "I ___ ate dinner",
+                "I ___ went to bed",
+                "I ___ worked yesterday",
+                "I ___ watched movie",
+                "I ___ thought about it"
             ];
             
             // Create background stars
@@ -315,7 +353,7 @@
             function initGame() {
                 score = 0;
                 scoreElement.textContent = score;
-                gameSpeed = 2;
+                gameSpeed = 1.5;
                 
                 // Clear any existing words
                 document.querySelectorAll('.word').forEach(word => word.remove());
@@ -323,7 +361,7 @@
                 
                 // Start generating words
                 clearInterval(wordInterval);
-                wordInterval = setInterval(createWord, 1500);
+                wordInterval = setInterval(createWord, 1800); // Slower word generation
                 
                 // Animate stars
                 setInterval(moveStars, 50);
@@ -489,9 +527,9 @@
                 
                 // Give a compliment based on score
                 let compliment = "improving!";
-                if (score >= 500) compliment = "absolutely stellar!";
-                else if (score >= 300) compliment = "troutstanding!";
-                else if (score >= 200) compliment = "really great!";
+                if (score >= 300) compliment = "absolutely stellar!";
+                else if (score >= 200) compliment = "troutstanding!";
+                else if (score >= 150) compliment = "really great!";
                 else if (score >= 100) compliment = "getting better!";
                 
                 complimentElement.textContent = compliment;
@@ -511,38 +549,4 @@
                     player.style.left = playerX + 'px';
                 } else if (e.key === 'ArrowRight') {
                     playerX += 20;
-                    if (playerX > gameContainer.offsetWidth - player.offsetWidth) {
-                        playerX = gameContainer.offsetWidth - player.offsetWidth;
-                    }
-                    player.style.left = playerX + 'px';
-                } else if (e.key === ' ') {
-                    // Space bar to shoot
-                    fireBullet();
-                    e.preventDefault(); // Prevent scrolling
-                }
-            });
-            
-            startButton.addEventListener('click', function() {
-                startScreen.style.display = "none";
-                gameActive = true;
-                initGame();
-                
-                // Set timer to end game after 60 seconds
-                setTimeout(endGame, 60000);
-            });
-            
-            restartButton.addEventListener('click', function() {
-                gameOverScreen.style.display = "none";
-                gameActive = true;
-                initGame();
-                
-                // Set timer to end game after 60 seconds
-                setTimeout(endGame, 60000);
-            });
-            
-            // Create stars when page loads
-            createStars();
-        });
-    </script>
-</body>
-</html>
+                    if (playerX
