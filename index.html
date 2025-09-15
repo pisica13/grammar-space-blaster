@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grammar Space Blaster</title>
   <style>
     body {
@@ -12,7 +12,7 @@
       background-color: #0f0824;
       color: #fff;
       overflow: hidden;
-      background-image:
+      background-image: 
         radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 10px),
         radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 5px),
         radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 10px);
@@ -36,10 +36,15 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 32px;
-      font-weight: bold;
-      color: #00ffff;
-      text-shadow: 0 0 10px #00ffff;
+      width: 60px;
+      height: 30px;
+      background-color: #00ffff;
+      color: #000;
+      text-align: center;
+      line-height: 30px;
+      font-size: 16px;
+      box-shadow: 0 0 10px #00ffff;
+      border-radius: 5px;
     }
 
     .bullet {
@@ -66,9 +71,7 @@
     .explosion {
       position: absolute;
       border-radius: 50%;
-      background-color: #ffaa00;
-      box-shadow: 0 0 20px #ff5500;
-      opacity: 0.8;
+      opacity: 0.9;
     }
 
     #score-container {
@@ -103,7 +106,9 @@
       z-index: 100;
     }
 
-    #game-over { display: none; }
+    #game-over {
+      display: none;
+    }
 
     h1 {
       font-size: 36px;
@@ -165,9 +170,9 @@
       left: 0;
       width: 100%;
       height: 10px;
-      background: linear-gradient(to bottom,
-        rgba(255, 0, 255, 0.2),
-        rgba(0, 255, 255, 0.2),
+      background: linear-gradient(to bottom, 
+        rgba(255, 0, 255, 0.2), 
+        rgba(0, 255, 255, 0.2), 
         rgba(255, 0, 255, 0.2));
       z-index: 10;
       animation: scan 4s linear infinite;
@@ -246,31 +251,57 @@
       const restartButton = document.getElementById('restart-button');
       const finalScoreElement = document.getElementById('final-score');
       const complimentElement = document.getElementById('compliment');
-
+      
       let playerX = gameContainer.offsetWidth / 2 - player.offsetWidth / 2;
       let score = 0;
       let gameActive = false;
       let gameSpeed = 1.5;
       let wordInterval;
       let stars = [];
-
+      
+      // Grammar examples
       const correctGrammar = [
-        "I __ happy", "I __ working now", "I __ at home", "I __ studying English",
-        "I __ a photographer", "I __ learning quickly", "I __ very talented",
-        "I __ going to the cinema", "I __ tired", "I __ hungry",
-        "I __ thinking", "I __ applying to different jobs", "I __ watching TV",
-        "I __ loving this game", "I __ making breakfast", "I __ taking a shower",
-        "I __ taking a photo", "I __ working with photos", "I __ watching a movie"
+        "I __ happy",
+        "I __ working now",
+        "I __ at home",
+        "I __ studying English",
+        "I __ a doctor",
+        "I __ learning quickly",
+        "I __ very talented",
+        "I __ going to the cinema",
+        "I __ tired",
+        "I __ hungry",
+        "I __ thinking",
+        "I __ applying",
+        "I __ watching TV",
+        "I __ loving this game",
+        "I __ making breakfast",
+        "I __ taking shower",
+        "I __ taking a photo",
+        "I __ working with photos",
+        "I __ watching movie"
       ];
-
+      
       const incorrectGrammar = [
-        "I ___ make breakfast","I ___ take a shower","I ___ take a photo","I ___ applied to different jobs",
-        "I ___ ate dinner","I ___ went to bed","I ___ thought about it","I ___ worked yesterday",
-        "I ___ watched a movie","I ___ work every day","I ___ speak Russian","I ___ play football",
-        "I ___ eat breakfast","I ___ drive a car","I ___ learn English","I ___ sing beautifully",
+        "I ___ make breakfast",
+        "I ___ take shower",
+        "I ___ take a photo",
+        "I ___ applied",
+        "I ___ ate dinner",
+        "I ___ went to bed",
+        "I ___ thought",
+        "I ___ worked",
+        "I ___ watched",
+        "I ___ work every day",
+        "I ___ speak Russian",
+        "I ___ play football",
+        "I ___ eat breakfast",
+        "I ___ drive a car",
+        "I ___ learn English",
+        "I ___ sing beautifully",
         "I ___ go to school"
       ];
-
+      
       function createStars() {
         for (let i = 0; i < 100; i++) {
           const star = document.createElement('div');
@@ -284,7 +315,7 @@
           stars.push(star);
         }
       }
-
+      
       function moveStars() {
         stars.forEach(star => {
           let y = parseInt(star.style.top || 0);
@@ -296,45 +327,31 @@
           star.style.top = y + 'px';
         });
       }
-
+      
       function initGame() {
         score = 0;
         scoreElement.textContent = score;
         gameSpeed = 1.5;
-        gameActive = true;
-
-        playerX = gameContainer.offsetWidth / 2 - player.offsetWidth / 2;
-        player.style.left = playerX + "px";
-
         document.querySelectorAll('.word').forEach(word => word.remove());
         document.querySelectorAll('.bullet').forEach(bullet => bullet.remove());
-
         startScreen.style.display = "none";
-
         clearInterval(wordInterval);
         wordInterval = setInterval(createWord, 1800);
-
         setInterval(moveStars, 50);
       }
-
+      
       function createWord() {
         const word = document.createElement('div');
         word.classList.add('word');
-
         const isCorrect = Math.random() > 0.5;
         const wordList = isCorrect ? correctGrammar : incorrectGrammar;
         const text = wordList[Math.floor(Math.random() * wordList.length)];
-
         word.textContent = text;
-        if (isCorrect) word.classList.add('correct');
-        else word.classList.add('incorrect');
-
+        if (isCorrect) word.classList.add('correct'); else word.classList.add('incorrect');
         const x = Math.random() * (gameContainer.offsetWidth - 150);
         word.style.left = x + 'px';
         word.style.top = '-50px';
-
         gameContainer.appendChild(word);
-
         let y = -50;
         const fallInterval = setInterval(() => {
           if (!gameActive) {
@@ -350,21 +367,25 @@
           }
         }, 20);
       }
-
-      function createExplosion(x, y) {
+      
+      function createExplosion(x, y, correctHit) {
         const explosion = document.createElement('div');
         explosion.classList.add('explosion');
         explosion.style.left = (x - 25) + 'px';
         explosion.style.top = (y - 25) + 'px';
         explosion.style.width = '50px';
         explosion.style.height = '50px';
+        explosion.style.backgroundColor = correctHit ? "#00ff00" : "#ff0000";
+        explosion.style.boxShadow = correctHit 
+          ? "0 0 20px #00ff00, 0 0 40px #00ff00" 
+          : "0 0 20px #ff0000, 0 0 40px #ff0000";
         gameContainer.appendChild(explosion);
-
+        
         let size = 50;
-        let opacity = 0.8;
+        let opacity = 0.9;
         const explodeInterval = setInterval(() => {
-          size += 5;
-          opacity -= 0.1;
+          size += 6;
+          opacity -= 0.08;
           explosion.style.width = size + 'px';
           explosion.style.height = size + 'px';
           explosion.style.left = (x - size/2) + 'px';
@@ -376,7 +397,7 @@
           }
         }, 50);
       }
-
+      
       function fireBullet() {
         if (!gameActive) return;
         const bullet = document.createElement('div');
@@ -384,7 +405,6 @@
         bullet.style.left = (playerX + player.offsetWidth/2 - 5) + 'px';
         bullet.style.top = (gameContainer.offsetHeight - 70) + 'px';
         gameContainer.appendChild(bullet);
-
         let y = parseInt(bullet.style.top);
         const bulletInterval = setInterval(() => {
           if (!gameActive) {
@@ -399,25 +419,25 @@
           words.forEach(word => {
             const wordRect = word.getBoundingClientRect();
             const bulletRect = bullet.getBoundingClientRect();
-            if (!(bulletRect.right < wordRect.left ||
-                  bulletRect.left > wordRect.right ||
-                  bulletRect.bottom < wordRect.top ||
+            if (!(bulletRect.right < wordRect.left || 
+                  bulletRect.left > wordRect.right || 
+                  bulletRect.bottom < wordRect.top || 
                   bulletRect.top > wordRect.bottom)) {
               clearInterval(bulletInterval);
               hit = true;
+              const isCorrect = word.classList.contains('correct');
               createExplosion(
                 parseInt(bullet.style.left) + 5,
-                parseInt(bullet.style.top) + 10
+                parseInt(bullet.style.top) + 10,
+                isCorrect
               );
-              const isCorrect = word.classList.contains('correct');
               if (isCorrect) {
                 score += 10;
-                scoreElement.textContent = score;
               } else {
                 score -= 20;
                 if (score < 0) score = 0;
-                scoreElement.textContent = score;
               }
+              scoreElement.textContent = score;
               bullet.remove();
               word.remove();
             }
@@ -428,7 +448,7 @@
           }
         }, 20);
       }
-
+      
       function endGame() {
         gameActive = false;
         clearInterval(wordInterval);
@@ -441,11 +461,10 @@
         complimentElement.textContent = compliment;
         gameOverScreen.style.display = "flex";
       }
-
+      
       document.addEventListener('keydown', function(e) {
         if (!gameActive && e.key === ' ') {
-          initGame();
-          setTimeout(endGame, 60000);
+          startButton.click();
           return;
         }
         if (!gameActive) return;
@@ -464,20 +483,20 @@
           e.preventDefault();
         }
       });
-
+      
       startButton.addEventListener('click', function() {
+        gameActive = true;
         initGame();
         setTimeout(endGame, 60000);
       });
-
+      
       restartButton.addEventListener('click', function() {
         gameOverScreen.style.display = "none";
+        gameActive = true;
         initGame();
         setTimeout(endGame, 60000);
       });
-
+      
       createStars();
     });
-  </script>
-</body>
-</html>
+  </
