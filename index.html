@@ -7,24 +7,34 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
+      padding: 20px;
       font-family: 'Press Start 2P', cursive, Arial, sans-serif;
       background-color: #0f0824;
       color: #fff;
-      overflow: hidden;
+      overflow: auto;
       background-image: 
         radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 10px),
         radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 5px),
         radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 10px);
       background-size: 550px 550px, 350px 350px, 250px 250px;
       background-position: 0 0, 40px 60px, 130px 270px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    #game-wrapper {
+      position: relative;
+      width: 800px;
+      margin: 0 auto;
     }
 
     #game-container {
       position: relative;
       width: 800px;
       height: 600px;
-      margin: 20px auto;
+      margin: 0 auto;
       border: 4px solid #ff00ff;
       box-shadow: 0 0 10px #ff00ff, inset 0 0 20px #ff00ff;
       overflow: hidden;
@@ -45,6 +55,7 @@
       font-size: 16px;
       box-shadow: 0 0 10px #00ffff;
       border-radius: 5px;
+      z-index: 50;
     }
 
     .bullet {
@@ -54,6 +65,7 @@
       background-color: #ff9900;
       box-shadow: 0 0 8px #ff9900;
       border-radius: 2px;
+      z-index: 40;
     }
 
     .word {
@@ -66,12 +78,14 @@
       color: #ffffff;
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+      z-index: 30;
     }
 
     .explosion {
       position: absolute;
       border-radius: 50%;
       opacity: 0.9;
+      z-index: 60;
     }
 
     #score-container {
@@ -81,6 +95,7 @@
       font-size: 20px;
       color: #00ffff;
       text-shadow: 2px 2px 0 #ff00ff;
+      z-index: 50;
     }
 
     #controls {
@@ -90,6 +105,7 @@
       text-align: right;
       font-size: 14px;
       color: #ff9900;
+      z-index: 50;
     }
 
     #start-screen, #game-over {
@@ -137,6 +153,7 @@
       margin: 20px 0;
       box-shadow: 0 0 15px #ff00ff;
       transition: all 0.3s;
+      z-index: 110;
     }
 
     button:hover {
@@ -160,6 +177,8 @@
       background-color: rgba(0, 0, 40, 0.7);
       border: 2px solid #00ffff;
       border-radius: 10px;
+      max-height: 300px;
+      overflow-y: auto;
     }
 
     .highlight { color: #ff00ff; font-weight: bold; }
@@ -187,6 +206,7 @@
       position: absolute;
       background-color: white;
       border-radius: 50%;
+      z-index: 5;
     }
 
     .bilingual {
@@ -194,6 +214,7 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
+      margin: 15px 0;
     }
 
     .russian { color: #ff9900; }
@@ -202,41 +223,43 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="game-container">
-    <div id="player">am</div>
-    <div id="score-container">SCORE: <span id="score">0</span></div>
-    <div id="controls">
-      ← → to move<br>
-      SPACE to shoot
-    </div>
-    <div class="scan-line"></div>
-
-    <div id="start-screen">
-      <h1>GRAMMAR SPACE BLASTER</h1>
-      <div id="instructions">
-        <div class="bilingual">
-          <p class="russian">Вы летите через космос, встречая английские фразы</p>
-          <p class="english">You are flying through space, encountering English phrases</p>
-        </div>
-        <div class="bilingual">
-          <p class="russian">СТРЕЛЯЙTE в фразы, которые требуют "am"</p>
-          <p class="english">SHOOT phrases that need "am"</p>
-        </div>
-        <div class="bilingual">
-          <p class="russian">ИЗБЕГАЙTE фразы, которые НЕ требуют "am"</p>
-          <p class="english">AVOID phrases that DON'T need "am"</p>
-        </div>
-        <p>Correct hits: <span class="highlight">+10 points</span></p>
-        <p>Wrong hits: <span class="highlight">-20 points</span></p>
+  <div id="game-wrapper">
+    <div id="game-container">
+      <div id="player">am</div>
+      <div id="score-container">SCORE: <span id="score">0</span></div>
+      <div id="controls">
+        ← → to move<br>
+        SPACE to shoot
       </div>
-      <button id="start-button">START MISSION</button>
-    </div>
+      <div class="scan-line"></div>
 
-    <div id="game-over">
-      <h1>MISSION COMPLETE</h1>
-      <h2>Final Score: <span id="final-score">0</span></h2>
-      <p>Your English grammar skills are <span id="compliment">out of this world</span>!</p>
-      <button id="restart-button">TRY AGAIN</button>
+      <div id="start-screen">
+        <h1>GRAMMAR SPACE BLASTER</h1>
+        <div id="instructions">
+          <div class="bilingual">
+            <p class="russian">Вы летите через космос, встречая английские фразы</p>
+            <p class="english">You are flying through space, encountering English phrases</p>
+          </div>
+          <div class="bilingual">
+            <p class="russian">СТРЕЛЯЙTE в фразы, которые требуют "am"</p>
+            <p class="english">SHOOT phrases that need "am"</p>
+          </div>
+          <div class="bilingual">
+            <p class="russian">ИЗБЕГАЙTE фразы, которые НЕ требуют "am"</p>
+            <p class="english">AVOID phrases that DON'T need "am"</p>
+          </div>
+          <p>Correct hits: <span class="highlight">+10 points</span></p>
+          <p>Wrong hits: <span class="highlight">-20 points</span></p>
+        </div>
+        <button id="start-button">START MISSION</button>
+      </div>
+
+      <div id="game-over">
+        <h1>MISSION COMPLETE</h1>
+        <h2>Final Score: <span id="final-score">0</span></h2>
+        <p>Your English grammar skills are <span id="compliment">out of this world</span>!</p>
+        <button id="restart-button">TRY AGAIN</button>
+      </div>
     </div>
   </div>
 
@@ -273,7 +296,7 @@
         "I __ hungry",
         "I __ thinking",
         "I __ applying some color corrections",
-        "I __ thinking to take a walk"
+        "I __ thinking to take a walk",
         "I __ watching TV",
         "I __ loving this game",
         "I __ making breakfast",
@@ -337,24 +360,36 @@
         gameSpeed = 1.5;
         document.querySelectorAll('.word').forEach(word => word.remove());
         document.querySelectorAll('.bullet').forEach(bullet => bullet.remove());
+        document.querySelectorAll('.explosion').forEach(explosion => explosion.remove());
         startScreen.style.display = "none";
+        gameOverScreen.style.display = "none";
         clearInterval(wordInterval);
         wordInterval = setInterval(createWord, 1800);
         setInterval(moveStars, 50);
       }
       
       function createWord() {
+        if (!gameActive) return;
+        
         const word = document.createElement('div');
         word.classList.add('word');
         const isCorrect = Math.random() > 0.5;
         const wordList = isCorrect ? correctGrammar : incorrectGrammar;
         const text = wordList[Math.floor(Math.random() * wordList.length)];
         word.textContent = text;
-        if (isCorrect) word.classList.add('correct'); else word.classList.add('incorrect');
+        if (isCorrect) {
+          word.classList.add('correct');
+          word.dataset.correct = "true";
+        } else {
+          word.classList.add('incorrect');
+          word.dataset.correct = "false";
+        }
+        
         const x = Math.random() * (gameContainer.offsetWidth - 150);
         word.style.left = x + 'px';
         word.style.top = '-50px';
         gameContainer.appendChild(word);
+        
         let y = -50;
         const fallInterval = setInterval(() => {
           if (!gameActive) {
@@ -364,6 +399,8 @@
           }
           y += gameSpeed;
           word.style.top = y + 'px';
+          
+          // Check if word reached bottom
           if (y > gameContainer.offsetHeight) {
             clearInterval(fallInterval);
             word.remove();
@@ -408,6 +445,7 @@
         bullet.style.left = (playerX + player.offsetWidth/2 - 5) + 'px';
         bullet.style.top = (gameContainer.offsetHeight - 70) + 'px';
         gameContainer.appendChild(bullet);
+        
         let y = parseInt(bullet.style.top);
         const bulletInterval = setInterval(() => {
           if (!gameActive) {
@@ -417,11 +455,15 @@
           }
           y -= 10;
           bullet.style.top = y + 'px';
+          
+          // Check for collisions with words
           const words = document.querySelectorAll('.word');
           let hit = false;
+          
           words.forEach(word => {
             const wordRect = word.getBoundingClientRect();
             const bulletRect = bullet.getBoundingClientRect();
+            
             if (!(bulletRect.right < wordRect.left || 
                   bulletRect.left > wordRect.right || 
                   bulletRect.bottom < wordRect.top || 
@@ -434,17 +476,20 @@
                 parseInt(bullet.style.top) + 10,
                 isCorrect
               );
+              
               if (isCorrect) {
                 score += 10;
               } else {
                 score -= 20;
                 if (score < 0) score = 0;
               }
+              
               scoreElement.textContent = score;
               bullet.remove();
               word.remove();
             }
           });
+          
           if (y < 0 || hit) {
             clearInterval(bulletInterval);
             bullet.remove();
@@ -465,12 +510,22 @@
         gameOverScreen.style.display = "flex";
       }
       
+      // Event listeners
       document.addEventListener('keydown', function(e) {
-        if (!gameActive && e.key === ' ') {
-          startButton.click();
+        if (e.key === ' ' && !gameActive && e.target === document.body) {
+          // Prevent space from scrolling the page
+          e.preventDefault();
+          
+          if (startScreen.style.display !== "none") {
+            startButton.click();
+          } else if (gameOverScreen.style.display === "flex") {
+            restartButton.click();
+          }
           return;
         }
+        
         if (!gameActive) return;
+        
         if (e.key === 'ArrowLeft') {
           playerX -= 20;
           if (playerX < 0) playerX = 0;
@@ -482,24 +537,27 @@
           }
           player.style.left = playerX + 'px';
         } else if (e.key === ' ') {
-          fireBullet();
+          // Prevent space from scrolling the page
           e.preventDefault();
+          fireBullet();
         }
       });
       
       startButton.addEventListener('click', function() {
         gameActive = true;
         initGame();
-        setTimeout(endGame, 60000);
+        setTimeout(endGame, 60000); // 60 second game
       });
       
       restartButton.addEventListener('click', function() {
-        gameOverScreen.style.display = "none";
         gameActive = true;
         initGame();
-        setTimeout(endGame, 60000);
+        setTimeout(endGame, 60000); // 60 second game
       });
       
+      // Initialize the game
       createStars();
     });
-  </
+  </script>
+</body>
+</html>
