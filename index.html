@@ -385,7 +385,7 @@
       let wordInterval;
       let stars = [];
       let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      let touchId = null;
+      let moveInterval = null;
       
       // Show mobile controls on mobile devices
       if (isMobile) {
@@ -411,9 +411,9 @@
         "I __ watching TV",
         "I __ loving this game",
         "I __ making breakfast",
-        "I __ taking a shower",
+        "I __ taking shower",
         "I __ taking a photo",
-        "I __ working on a project",
+        "I __ working with photos",
         "I __ watching a movie",
         "I __ playing with Pufi",
         "I __ love Sasha"
@@ -611,6 +611,7 @@
       function endGame() {
         gameActive = false;
         clearInterval(wordInterval);
+        if (moveInterval) clearInterval(moveInterval);
         finalScoreElement.textContent = score;
         let compliment = "improving!";
         if (score >= 300) compliment = "absolutely stellar!";
@@ -654,23 +655,41 @@
         }
       });
       
-      // Event listeners for mobile buttons
+      // Event listeners for mobile buttons - FIXED
       leftBtn.addEventListener('touchstart', function(e) {
         e.preventDefault();
         if (!gameActive) return;
-        playerX -= 20;
-        if (playerX < 0) playerX = 0;
-        player.style.left = playerX + 'px';
+        
+        // Start continuous movement when button is held
+        moveInterval = setInterval(() => {
+          playerX -= 15;
+          if (playerX < 0) playerX = 0;
+          player.style.left = playerX + 'px';
+        }, 100);
+      });
+      
+      leftBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        clearInterval(moveInterval);
       });
       
       rightBtn.addEventListener('touchstart', function(e) {
         e.preventDefault();
         if (!gameActive) return;
-        playerX += 20;
-        if (playerX > gameContainer.offsetWidth - player.offsetWidth) {
-          playerX = gameContainer.offsetWidth - player.offsetWidth;
-        }
-        player.style.left = playerX + 'px';
+        
+        // Start continuous movement when button is held
+        moveInterval = setInterval(() => {
+          playerX += 15;
+          if (playerX > gameContainer.offsetWidth - player.offsetWidth) {
+            playerX = gameContainer.offsetWidth - player.offsetWidth;
+          }
+          player.style.left = playerX + 'px';
+        }, 100);
+      });
+      
+      rightBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        clearInterval(moveInterval);
       });
       
       shootBtn.addEventListener('touchstart', function(e) {
@@ -704,13 +723,17 @@
       });
       
       // Double tap to shoot
+      let lastTap = 0;
       gameContainer.addEventListener('touchend', function(e) {
         if (!gameActive) return;
         
         // Check if it's a double tap
-        if (e.detail === 2 || e.touches.length === 0) {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 300 && tapLength > 0) {
           fireBullet();
         }
+        lastTap = currentTime;
       });
       
       startButton.addEventListener('click', function() {
